@@ -17,12 +17,15 @@ func main() {
 	r.PUT("/user/:id", userRoutes.Update)
 	r.DELETE("/user/:id", userRoutes.Delete)
 
+	//For https
+	// http.ListenAndServeTLS("addr", "certFilePath", "keyFilePath", r)
+	
+	//For development
 	http.ListenAndServe(":8080", r)
 }
 
 func getSession() *mgo.Session {
 	session, err := mgo.Dial("mongodb://localhost")
-	// defer session.Close()
 
 	if err != nil {
 		panic(err)
