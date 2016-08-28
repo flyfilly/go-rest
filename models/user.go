@@ -13,6 +13,6 @@ type User struct {
 	Email     string        `json:"email" bson:"email"`
 }
 
-func (user *User) PrintDetails() string {
-	return user.Username + " " + user.Firstname + " " + user.Lastname + " " + user.Email
+func (this *User) PrintDetails() string {
+	return this.Username + " " + this.Firstname + " " + this.Lastname + " " + this.Email
 }
