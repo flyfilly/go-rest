@@ -12,7 +12,7 @@ func main() {
 
 	userRoutes := routes.NewUserRouter(getSession())
 	r.GET("/user", userRoutes.ReadAll)
-	r.GET("/user/:id", userRoutes.Read)
+	r.GET("/user/:id", userRoutes.ReadOne)
 	r.POST("/user", userRoutes.Create)
 	r.PUT("/user/:id", userRoutes.Update)
 	r.DELETE("/user/:id", userRoutes.Delete)

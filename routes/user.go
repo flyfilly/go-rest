@@ -39,7 +39,7 @@ func (ur UserRouter) ReadAll(w http.ResponseWriter, r *http.Request, p httproute
 	fmt.Fprintf(w, "%s", uj)
 }
 
-func (ur UserRouter) Read(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (ur UserRouter) ReadOne(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
 
 	//Bad Request
@@ -64,6 +64,7 @@ func (ur UserRouter) Read(w http.ResponseWriter, r *http.Request, p httprouter.P
 	respond(w, http.StatusOK, uj)
 }
 
+//TODO Update for PUT
 func (ur UserRouter) Update(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	u := models.User{}
 	json.NewDecoder(r.Body).Decode(&u)
@@ -87,6 +88,11 @@ func (ur UserRouter) Create(w http.ResponseWriter, r *http.Request, p httprouter
 // RemoveUser removes an existing user resource
 func (ur UserRouter) Delete(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
+
+	//Bad Request
+	defer func() {
+		recover()
+	}()
 
 	if !bson.IsObjectIdHex(id) {
 		respond(w, http.StatusBadRequest, nil)
