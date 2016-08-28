@@ -29,13 +29,13 @@ func (ur UserRouter) ReadAll(w http.ResponseWriter, r *http.Request, p httproute
 	err := ur.session.DB(database).C(collection).Find(nil).All(&all)
 
 	if err != nil {
-		respond(w, 500, nil)
+		respond(w, http.StatusInternalServerError, nil)
 	}
 
 	uj, _ := json.Marshal(all)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, "%s", uj)
 }
 
@@ -43,8 +43,12 @@ func (ur UserRouter) Read(w http.ResponseWriter, r *http.Request, p httprouter.P
 	id := p.ByName("id")
 
 	//Bad Request
+	defer func() {
+		recover()
+	}()
+
 	if !bson.IsObjectIdHex(id) {
-		respond(w, 404, nil)
+		respond(w, http.StatusBadRequest, nil)
 	}
 
 	oid := bson.ObjectIdHex(id)
@@ -52,12 +56,12 @@ func (ur UserRouter) Read(w http.ResponseWriter, r *http.Request, p httprouter.P
 	u := models.User{}
 
 	if err := ur.session.DB(database).C(collection).FindId(oid).One(&u); err != nil {
-		respond(w, 404, nil)
+		respond(w, http.StatusNotFound, nil)
 	}
 
 	uj, _ := json.Marshal(u)
 
-	respond(w, 200, uj)
+	respond(w, http.StatusOK, uj)
 }
 
 func (ur UserRouter) Update(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -66,7 +70,7 @@ func (ur UserRouter) Update(w http.ResponseWriter, r *http.Request, p httprouter
 
 	uj, _ := json.Marshal(u)
 
-	respond(w, 201, uj)
+	respond(w, http.StatusOK, uj)
 }
 
 // CreateUser creates a new user resource
@@ -77,7 +81,7 @@ func (ur UserRouter) Create(w http.ResponseWriter, r *http.Request, p httprouter
 	ur.session.DB(database).C(collection).Insert(u)
 	uj, _ := json.Marshal(u)
 
-	respond(w, 201, uj)
+	respond(w, http.StatusCreated, uj)
 }
 
 // RemoveUser removes an existing user resource
@@ -85,16 +89,16 @@ func (ur UserRouter) Delete(w http.ResponseWriter, r *http.Request, p httprouter
 	id := p.ByName("id")
 
 	if !bson.IsObjectIdHex(id) {
-		respond(w, 404, nil)
+		respond(w, http.StatusBadRequest, nil)
 	}
 
 	oid := bson.ObjectIdHex(id)
 
 	if err := ur.session.DB(database).C(collection).RemoveId(oid); err != nil {
-		respond(w, 404, nil)
+		respond(w, http.StatusNotFound, nil)
 	}
 
-	respond(w, 200, nil)
+	respond(w, http.StatusOK, nil)
 }
 
 func respond(w http.ResponseWriter, code int, response []byte) {

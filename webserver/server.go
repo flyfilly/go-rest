@@ -22,6 +22,7 @@ func main() {
 
 func getSession() *mgo.Session {
 	session, err := mgo.Dial("mongodb://localhost")
+	// defer session.Close()
 
 	if err != nil {
 		panic(err)
