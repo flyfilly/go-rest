@@ -11,16 +11,13 @@ import (
 )
 
 const (
-	database string = "go-rest"
+	database   string = "go-rest"
 	collection string = "users"
 )
 
-type (
-	// UserController represents the controller for operating on the User resource
-	UserRouter struct {
-		session *mgo.Session
-	}
-)
+type UserRouter struct {
+	session *mgo.Session
+}
 
 func NewUserRouter(s *mgo.Session) *UserRouter {
 	return &UserRouter{s}
@@ -52,7 +49,7 @@ func (ur UserRouter) Read(w http.ResponseWriter, r *http.Request, p httprouter.P
 
 	oid := bson.ObjectIdHex(id)
 
-	u := models.User{ }
+	u := models.User{}
 
 	if err := ur.session.DB(database).C(collection).FindId(oid).One(&u); err != nil {
 		respond(w, 404, nil)
